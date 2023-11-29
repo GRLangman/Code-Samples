@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 15 11:39:13 2023
+
+@author: Grant
+"""
+
+import pandas as pd
+from datetime import date
+
+today = date.today()
+
+community_name='SABP'
+Community_SAQA_id='633'
+file_name='25_2'
+
+dat=pd.read_csv("BPP_10_file25.csv",dtype=(str))
+dat2=dat[['id']]
+dat2['National_Id']=dat['National_Id'].str.ljust(15, " ")
+dat2['National_Id']=dat2['National_Id'].str.lstrip()
+
+dat2['Alternative_Id_Type']=dat['Alternative_Id_Type'].astype(str)
+dat2['Alternative_Id_Type']=dat2['Alternative_Id_Type'].str.ljust(3, " ")
+#dat2['Alternative_Id_Type']=" ".ljust(10, " ")#filler###################
+dat2['Equity_Code']=dat['EQUITY'].str.ljust(10, " ")
+#dat2['Nationality_Code']=dat['Provider_Type_Id'].astype(str)
+dat2['Nationality_Code']=dat['NATIONALITY'].str.ljust(3, " ")#must be code
+
+dat2['Home_Language_Code']=dat['LANGUAGE'].str.ljust(10, " ")
+dat2['Gender_Code']=dat['GENDER'].str.ljust(1, " ")
+dat2['Citizen_Resident_Status_Code']=dat['CITIZEN'].str.ljust(10, " ")
+#dat2['Provider_Postal_Code']=dat['Postal_Code'].astype(str)
+dat2['Socioeconomic_Status_Code']=dat['SOCIO'].str.ljust(2, " ")
+
+#dat2['Contact_Filler']=" ".ljust(200, " ")
+
+dat2['Disability_Status_Code']=dat['DISABILITY'].str.ljust(10, " ")
+
+dat2['Person_Last_Name']=dat['LASTNAME'].str.ljust(45, " ")
+dat2['Person_First_Name']=dat['FIRSTNAME'].str.ljust(26, " ")
+dat2['Person_Middle_Name']=dat['MIDDLENAME'].str.ljust(50, " ")
+#dat2['Person_Title']=dat['NAMEPREFIX'].str.ljust(10, " ")
+dat2['Person_Title']=" ".ljust(10, " ")
+#dat2['Person_Birth_Date']=dat['Person_Birth_Date'].str.ljust(8, " ")
+
+
+dat2['Person_Birth_Date']=dat['BIRTHDATE'].astype('datetime64[ns]')
+dat2['Person_Birth_Date']=dat2['Person_Birth_Date'].dt.strftime('%Y%m%d')
+dat2['Person_Birth_Date']=dat2['Person_Birth_Date'].str.ljust(8, " ")
+
+dat2['fILLER1']=" ".ljust(368, " ")#filler###################ADDRESS ETC
+
+dat2['Person_Email_Address']=dat['EMAILADDR'].str.ljust(50, " ") # N Position 592
+
+dat2['Province_Code']=dat['Post2'].str.ljust(2, " ") # Y Position 642
+#dat2['Provider_Code']=dat['Provider_Code'].str.ljust(20, " ") # C Position 644
+
+dat2['Provider_Code']=" ".ljust(20, " ")
+
+#dat2['Provider_Etqa_Id']=dat['Provider_Etqa_Id'].str.ljust(10, " ") # C Position 664
+dat2['Provider_Etqa_Id']="639".ljust(10, " ")
+
+dat2['filler2']=" ".ljust(98, " ")
+dat2['Seeing_Rating_Id']="1".ljust(2, " ") # N Position 772
+dat2['Hearing_Rating_Id']="1".ljust(2, " ") # N Position 774
+dat2['Communicating_Rating_Id']="1".ljust(2, " ") # N Position 776
+dat2['Walking_Rating_Id']="1".ljust(2, " ") # N Position 778
+dat2['Remembering_Rating_Id']="1".ljust(2, " ") # N Position 780
+dat2['Selfcare_Rating_Id']="1".ljust(2, " ") # N Position 782
+
+
+dat2['Date_Stamp']=today.strftime("%Y%m%d").ljust(8, " ")
+dat2 = dat2.drop('id', 1)
+
+
+dat2.to_csv(community_name + 'toADD'+ file_name +'.dat', header=None, index=None, sep=',', mode='w') 
+
+Supplier_Identifier='SABP'.ljust(4, " ")
+File_Desc='Learners'.ljust(20, " ")
+record_count=len(dat2.index)
+count_str=str(record_count).ljust(10, " ")
+head_filler=" ".ljust(807, " ")
+header='HEADER'+Supplier_Identifier+File_Desc+count_str+head_filler+'\n'         
+with open(community_name + 'toADD'+ file_name +'.dat') as input:
+    with open(community_name + 'toADDCLEAN'+ file_name +'.dat', "w") as output:
+        output.write(header)
+        for line in input:
+            output.write(line.replace(',', '')) 
